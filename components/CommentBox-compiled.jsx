@@ -25,11 +25,6 @@ var CommentBox = React.createClass({
     return React.createElement(
       'div',
       { className: 'commentBox' },
-      React.createElement(
-        'h1',
-        null,
-        'Hello, world! I am a CommentBox.'
-      ),
       React.createElement(CommentForm, { onCommentSubmit: this.handleCommentSubmit, author: this.props.author }),
       React.createElement(CommentList, { data: this.state.data })
     );
@@ -50,7 +45,6 @@ var CommentList = React.createClass({
     return React.createElement(
       'div',
       { className: 'commentList' },
-      'Hello, world! I am a CommentList.',
       comments
     );
   }
@@ -60,7 +54,7 @@ var Comment = React.createClass({
   displayName: 'Comment',
 
   getInitialState: function () {
-    return { showComment: false, nestedComments: this.props.nestedComments };
+    return { text: this.props.text, editedComment: false, deletedComment: false, showComment: false, nestedComments: this.props.nestedComments };
   },
   //////
   handleNestedCommentSubmit: function (comment) {
@@ -73,7 +67,22 @@ var Comment = React.createClass({
     nestedComments.unshift(comment);
     this.setState({ nestedComments: nestedComments });
   },
+
+  handleCommentDelete: function (e) {
+    e.preventDefault();
+    this.setState({ deletedComment: !this.state.deletedComment });
+  },
   ///////
+  handleCommentEdit: function (e) {
+    e.preventDefault();
+    this.setState({ editedComment: !this.state.editedComment });
+  },
+
+  handleCommentEditSubmit: function (text) {
+    this.setState({ text: text });
+    this.setState({ editedComment: !this.state.editedComment });
+  },
+
   commentLink: function (e) {
     e.preventDefault();
     this.setState({ showComment: !this.state.showComment });
@@ -87,6 +96,30 @@ var Comment = React.createClass({
   },
 
   render: function () {
+    if (this.state.deletedComment) {
+      return React.createElement(
+        'div',
+        { className: 'comment media' },
+        'Comment has been deleted. ',
+        React.createElement(
+          'a',
+          { href: '#', onClick: this.handleCommentDelete },
+          'Restore'
+        ),
+        React.createElement('hr', null)
+      );
+    }
+
+    if (this.state.editedComment) {
+      return React.createElement(
+        'div',
+        null,
+        React.createElement(EditForm, { placeholder: this.state.text, onCommentEdit: this.handleCommentEditSubmit }),
+        React.createElement('hr', null),
+        React.createElement(CommentList, { data: this.props.nestedComments })
+      );
+    }
+
     return React.createElement(
       'div',
       { className: 'comment media' },
@@ -106,22 +139,84 @@ var Comment = React.createClass({
         React.createElement(
           'p',
           null,
-          this.props.text
+          this.state.text
         ),
         React.createElement(
-          'a',
-          { href: '#', onClick: this.commentLink },
-          'Comment'
+          'div',
+          { className: 'row' },
+          React.createElement(
+            'div',
+            { className: 'col-sm-1 pull-left' },
+            React.createElement(
+              'a',
+              { href: '#', onClick: this.commentLink, className: 'pull-left' },
+              React.createElement('i', { className: 'fa fa-reply', 'aria-hidden': 'true' }),
+              ' Reply'
+            )
+          ),
+          React.createElement(
+            'div',
+            { className: 'col-sm-1 pull-right' },
+            React.createElement(
+              'a',
+              { href: '#', onClick: this.handleCommentEdit, className: 'pull-right' },
+              React.createElement('i', { className: 'fa fa-pencil', 'aria-hidden': 'true' }),
+              ' Edit'
+            )
+          ),
+          React.createElement(
+            'div',
+            { className: 'col-sm-1 pull-right' },
+            React.createElement(
+              'a',
+              { href: '#', onClick: this.handleCommentDelete, className: 'pull-right' },
+              React.createElement('i', { className: 'fa fa-trash-o', 'aria-hidden': 'true' }),
+              ' Delete'
+            )
+          )
         ),
         React.createElement(
           'div',
           { className: 'media m-t-2' },
           this.renderCommentForm()
         ),
+        React.createElement('hr', null),
         React.createElement(CommentList, { data: this.props.nestedComments })
       )
     );
   }
+});
+
+var EditForm = React.createClass({
+  displayName: 'EditForm',
+
+  getInitialState: function () {
+    return { text: this.props.placeholder };
+  },
+  handleEditSubmit: function (e) {
+    e.preventDefault();
+    this.props.onCommentEdit(this.state.text);
+  },
+
+  handleTextChange: function (e) {
+    this.setState({ text: e.target.value });
+  },
+
+  render: function () {
+    return React.createElement(
+      'form',
+      { className: 'commentForm', onSubmit: this.handleEditSubmit },
+      React.createElement('textarea', { rows: '3', className: 'form-control',
+        value: this.state.text,
+        onChange: this.handleTextChange }),
+      React.createElement(
+        'button',
+        { type: 'submit', className: 'btn btn-primary' },
+        'Submit'
+      )
+    );
+  }
+
 });
 
 var CommentForm = React.createClass({
