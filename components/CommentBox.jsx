@@ -88,13 +88,28 @@ var Comment = React.createClass({
     this.renderCommentForm();
   },
 
-  renderCommentForm: function()
-  {
-    if(this.state.showComment)
-    {
+  renderCommentForm: function()  {
+    if(this.state.showComment){
       return (<CommentForm onCommentSubmit={this.handleNestedCommentSubmit} author={author}/>)
     }
   },
+
+	renderEditDeleteButtons: function() {
+		if (this.props.author === author){
+			return (
+			<div className="col-sm-2 pull-right">
+			<div className="row">
+			<div className="col-sm-1">
+				<a href="#" onClick = {this.handleCommentEdit}><i className="fa fa-pencil" aria-hidden="true"></i></a>
+			</div>
+			<div className="col-sm-1">
+				<a href="#" onClick = {this.handleCommentDelete}><i className="fa fa-trash-o" aria-hidden="true"></i></a>
+			</div>
+			</div>
+			</div>
+			);
+		}
+	},
 
   render: function() {
     if (this.state.deletedComment) {
@@ -131,15 +146,10 @@ var Comment = React.createClass({
         </h2>
         <p>{this.state.text}</p>
         <div className="row">
-          <div className="col-sm-1 pull-left">
+          <div className="col-sm-2 pull-left">
             <a href="#" onClick = {this.commentLink} className="pull-left"><i className="fa fa-reply" aria-hidden="true"></i> Reply</a>
           </div>
-          <div className="col-sm-1 pull-right">
-            <a href="#" onClick = {this.handleCommentEdit} className="pull-right"><i className="fa fa-pencil" aria-hidden="true"></i> Edit</a>
-          </div>
-          <div className="col-sm-1 pull-right">
-            <a href="#" onClick = {this.handleCommentDelete} className="pull-right"><i className="fa fa-trash-o" aria-hidden="true"></i> Delete</a>
-            </div>
+					{this.renderEditDeleteButtons()}
         </div>
         <div className="media m-t-2">
           {this.renderCommentForm()}
@@ -172,9 +182,11 @@ var EditForm = React.createClass({
   render: function(){
     return (
       <form className="commentForm"  onSubmit = {this.handleEditSubmit}>
+			<div className="form-group">
         <textarea rows="3" className="form-control"
         value={this.state.text}
         onChange={this.handleTextChange}/>
+				</div>
         <button type="submit" className="btn btn-primary">Submit</button>
       </form>
     );
@@ -214,10 +226,12 @@ var CommentForm = React.createClass({
         <div className="well">
         <h4>Leave a Comment:</h4>
       	<form className="commentForm"  onSubmit = {this.handleSubmit}>
+				<div className="form-group">
         	<textarea rows="3" className="form-control"
         	placeholder="Enter your comment here"
         	value={this.state.text}
         	onChange={this.handleTextChange}/>
+					</div>
           <button type="submit" className="btn btn-primary">Submit</button>
       	</form>
         </div>

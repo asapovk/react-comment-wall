@@ -95,6 +95,37 @@ var Comment = React.createClass({
     }
   },
 
+  renderEditDeleteButtons: function () {
+    if (this.props.author === author) {
+      return React.createElement(
+        'div',
+        { className: 'col-sm-2 pull-right' },
+        React.createElement(
+          'div',
+          { className: 'row' },
+          React.createElement(
+            'div',
+            { className: 'col-sm-1' },
+            React.createElement(
+              'a',
+              { href: '#', onClick: this.handleCommentEdit },
+              React.createElement('i', { className: 'fa fa-pencil', 'aria-hidden': 'true' })
+            )
+          ),
+          React.createElement(
+            'div',
+            { className: 'col-sm-1' },
+            React.createElement(
+              'a',
+              { href: '#', onClick: this.handleCommentDelete },
+              React.createElement('i', { className: 'fa fa-trash-o', 'aria-hidden': 'true' })
+            )
+          )
+        )
+      );
+    }
+  },
+
   render: function () {
     if (this.state.deletedComment) {
       return React.createElement(
@@ -146,7 +177,7 @@ var Comment = React.createClass({
           { className: 'row' },
           React.createElement(
             'div',
-            { className: 'col-sm-1 pull-left' },
+            { className: 'col-sm-2 pull-left' },
             React.createElement(
               'a',
               { href: '#', onClick: this.commentLink, className: 'pull-left' },
@@ -154,26 +185,7 @@ var Comment = React.createClass({
               ' Reply'
             )
           ),
-          React.createElement(
-            'div',
-            { className: 'col-sm-1 pull-right' },
-            React.createElement(
-              'a',
-              { href: '#', onClick: this.handleCommentEdit, className: 'pull-right' },
-              React.createElement('i', { className: 'fa fa-pencil', 'aria-hidden': 'true' }),
-              ' Edit'
-            )
-          ),
-          React.createElement(
-            'div',
-            { className: 'col-sm-1 pull-right' },
-            React.createElement(
-              'a',
-              { href: '#', onClick: this.handleCommentDelete, className: 'pull-right' },
-              React.createElement('i', { className: 'fa fa-trash-o', 'aria-hidden': 'true' }),
-              ' Delete'
-            )
-          )
+          this.renderEditDeleteButtons()
         ),
         React.createElement(
           'div',
@@ -206,9 +218,13 @@ var EditForm = React.createClass({
     return React.createElement(
       'form',
       { className: 'commentForm', onSubmit: this.handleEditSubmit },
-      React.createElement('textarea', { rows: '3', className: 'form-control',
-        value: this.state.text,
-        onChange: this.handleTextChange }),
+      React.createElement(
+        'div',
+        { className: 'form-group' },
+        React.createElement('textarea', { rows: '3', className: 'form-control',
+          value: this.state.text,
+          onChange: this.handleTextChange })
+      ),
       React.createElement(
         'button',
         { type: 'submit', className: 'btn btn-primary' },
@@ -259,10 +275,14 @@ var CommentForm = React.createClass({
       React.createElement(
         'form',
         { className: 'commentForm', onSubmit: this.handleSubmit },
-        React.createElement('textarea', { rows: '3', className: 'form-control',
-          placeholder: 'Enter your comment here',
-          value: this.state.text,
-          onChange: this.handleTextChange }),
+        React.createElement(
+          'div',
+          { className: 'form-group' },
+          React.createElement('textarea', { rows: '3', className: 'form-control',
+            placeholder: 'Enter your comment here',
+            value: this.state.text,
+            onChange: this.handleTextChange })
+        ),
         React.createElement(
           'button',
           { type: 'submit', className: 'btn btn-primary' },
