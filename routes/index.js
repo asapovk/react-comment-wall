@@ -11,8 +11,8 @@ var CommentBox = components.CommentBox;
 var router = express.Router();
 
 var data = [
-  {id: 1, author: "Pete Hunt", text: "This is one comment", nestedComments: [{id: 3, author: "Pete Hunt", text: "This is one comment", nestedComments: []}]},
-  {id: 2, author: "Jordan Walke", text: "This is *another* comment", nestedComments: [{id: 4, author: "Jordan Walke", text: "This is *another* comment", nestedComments: []}]}
+  {id: 1, author: "Pete Hunt", text: "This is one comment", date: 0, nestedComments: [{id: 3, author: "Pete Hunt", text: "This is one comment", date: 3, nestedComments: []}]},
+  {id: 2, author: "Jordan Walke", text: "This is *another* comment", date: 1, nestedComments: [{id: 4, author: "Jordan Walke", text: "This is *another* comment", date: 4, nestedComments: []}]}
 ];
 
 

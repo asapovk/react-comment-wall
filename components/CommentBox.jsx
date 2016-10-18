@@ -12,6 +12,7 @@ var CommentBox = React.createClass({
       var data =this.props.data;
 			var newId = data.length + 1;
 
+			comment.date = Date.now();
 			comment.id = newId;
 			data.unshift(comment);
 			this.setState({data: data});
@@ -38,7 +39,7 @@ var CommentList = React.createClass({
      var comments =[];
      for (var i=0; i<data.length; i++)
      {
-       comments.push(<Comment key = {data[i].id} author = {data[i].author}  text = {data[i].text} nestedComments= {data[i].nestedComments}/>);
+       comments.push(<Comment key = {data[i].id} author = {data[i].author}  text = {data[i].text} date={data[i].date} nestedComments= {data[i].nestedComments}/>);
      }
 
     	return (
@@ -54,6 +55,66 @@ var Comment = React.createClass({
   getInitialState: function(){
     return {text: this.props.text, editedComment: false, deletedComment: false, showComment: false, nestedComments: this.props.nestedComments};
   },
+
+	handleCommentDate(current, previous){
+
+		var msPerMinute = 60 * 1000;
+		var msPerHour = msPerMinute * 60;
+		var msPerDay = msPerHour * 24;
+		var msPerMonth = msPerDay * 30;
+		var msPerYear = msPerDay * 365;
+
+		var elapsed = current - previous;
+
+		if (elapsed <= 1000) {
+			return 'Just now'
+		}
+
+		else if (elapsed < msPerMinute) {
+				 return Math.round(elapsed/1000) + ' seconds ago';
+		}
+
+		else if (elapsed < 2*msPerMinute) {
+				 return  '1 minute ago';
+		}
+
+		else if (elapsed < msPerHour) {
+				 return Math.round(elapsed/msPerMinute) + ' minutes ago';
+		}
+
+		else if (elapsed < 2*msPerHour) {
+				 return '1 hour ago';
+		}
+
+		else if (elapsed < msPerDay ) {
+				 return Math.round(elapsed/msPerHour ) + ' hours ago';
+		}
+
+		else if (elapsed < 2*msPerDay ) {
+				 return '1 day ago';
+		}
+
+		else if (elapsed < msPerMonth) {
+				return Math.round(elapsed/msPerDay) + ' days ago';
+		}
+
+		else if (elapsed < 2*msPerMonth) {
+				return '1 mounth ago';
+		}
+
+		else if (elapsed < msPerYear) {
+				return Math.round(elapsed/msPerMonth) + ' months ago';
+		}
+
+		else if (elapsed < 2*msPerYear) {
+				return '1 year ago';
+		}
+
+		else {
+				return  Math.round(elapsed/msPerYear ) + ' years ago';
+		}
+
+	},
 //////
   handleNestedCommentSubmit: function (comment) {
 
@@ -61,6 +122,7 @@ var Comment = React.createClass({
       var nestedComments = this.props.nestedComments;
 			var newId = nestedComments.length + 1;
 
+			comment.date = Date.now();
 			comment.id = newId;
 			nestedComments.unshift(comment);
 			this.setState({nestedComments: nestedComments});
@@ -141,9 +203,12 @@ var Comment = React.createClass({
           <img className = "media-object" src="http://placehold.it/64x64" alt=""/>
       </a>
       <div className="media-body">
-        <h2 className="commentAuthor media-heading">
+			<div className="media-heading">
+        <h4 className="commentAuthor">
           {this.props.author}
-        </h2>
+					<small> {this.handleCommentDate(Date.now(),this.props.date)}</small>
+        </h4>
+				</div>
         <p>{this.state.text}</p>
         <div className="row">
           <div className="col-sm-2 pull-left">
