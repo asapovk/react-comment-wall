@@ -12,6 +12,8 @@ var CommentBox = React.createClass({
       var data =this.props.data;
 			var newId = data.length + 1;
 
+			comment.isUserThumbed = false;
+			comment.thumbs = 0;
 			comment.date = Date.now();
 			comment.id = newId;
 			data.unshift(comment);
@@ -35,11 +37,11 @@ var CommentBox = React.createClass({
 var CommentList = React.createClass({
 
   	render: function() {
-     var data= this.props.data;
-     var comments =[];
-     for (var i=0; i<data.length; i++)
+    var data= this.props.data;
+    var comments =[];
+    for (var i=0; i<data.length; i++)
      {
-       comments.push(<Comment key = {data[i].id} author = {data[i].author}  text = {data[i].text} date={data[i].date} nestedComments= {data[i].nestedComments}/>);
+       comments.push(<Comment key = {data[i].id} author = {data[i].author}  text = {data[i].text} date={data[i].date} isUserThumbed={data[i].isUserThumbed} thumbs={data[i].thumbs} nestedComments= {data[i].nestedComments}/>);
      }
 
     	return (
@@ -53,8 +55,29 @@ var CommentList = React.createClass({
 
 var Comment = React.createClass({
   getInitialState: function(){
-    return {text: this.props.text, editedComment: false, deletedComment: false, showComment: false, nestedComments: this.props.nestedComments};
+    return {isUserThumbed: this.props.isUserThumbed, thumbs: this.props.thumbs, text: this.props.text, editedComment: false, deletedComment: false, showComment: false, nestedComments: this.props.nestedComments};
   },
+
+	thumbUp: function (e) {
+		  e.preventDefault();
+	 	  var thumbs =this.state.thumbs;
+			if(this.state.isUserThumbed){
+				thumbs=thumbs-1;
+			}
+			else {
+				thumbs=thumbs+1;
+			}
+			this.setState({thumbs: thumbs});
+			this.setState({isUserThumbed: !this.state.isUserThumbed})
+
+	},
+
+	renderThumbUp: function () {
+		if(this.state.isUserThumbed){
+			return (<i className="fa fa-thumbs-up" aria-hidden="true"></i>);
+		}
+		return (<i className="fa fa-thumbs-o-up" aria-hidden="true"></i>);
+	},
 
 	handleCommentDate(current, previous){
 
@@ -122,6 +145,8 @@ var Comment = React.createClass({
       var nestedComments = this.props.nestedComments;
 			var newId = nestedComments.length + 1;
 
+			comment.isUserThumbed = false;
+			comment.thumbs = 0;
 			comment.date = Date.now();
 			comment.id = newId;
 			nestedComments.unshift(comment);
@@ -202,24 +227,27 @@ var Comment = React.createClass({
       <a className="pull-left" href="#">
           <img className = "media-object" src="http://placehold.it/64x64" alt=""/>
       </a>
-      <div className="media-body">
+
 			<div className="media-heading">
         <h4 className="commentAuthor">
           {this.props.author}
-					<small> {this.handleCommentDate(Date.now(),this.props.date)}</small>
+					<small> &middot; {this.handleCommentDate(Date.now(),this.props.date)}</small>
         </h4>
 				</div>
+				<div className="media-body">
         <p>{this.state.text}</p>
         <div className="row">
           <div className="col-sm-2 pull-left">
-            <a href="#" onClick = {this.commentLink} className="pull-left"><i className="fa fa-reply" aria-hidden="true"></i> Reply</a>
+						<span className="text-muted">{this.state.thumbs} </span>
+						<a href="#" onClick = {this.thumbUp}>{this.renderThumbUp()}</a>
+						 <span> &middot; </span>
+            <a href="#" onClick = {this.commentLink}>Reply</a>
           </div>
 					{this.renderEditDeleteButtons()}
         </div>
         <div className="media m-t-2">
           {this.renderCommentForm()}
         </div>
-        <hr/>
         <CommentList data = {this.props.nestedComments}/>
       </div>
       </div>
