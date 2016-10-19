@@ -27,7 +27,7 @@ var CommentBox = React.createClass({
     return (
       <div className="commentBox">
         <CommentForm onCommentSubmit={this.handleCommentSubmit} author={this.props.author}/>
-		    <CommentList  data = {this.state.data}/>
+		    <CommentList  data = {this.state.data} nestLevel="1"/>
       </div>
     );
   }
@@ -37,11 +37,11 @@ var CommentBox = React.createClass({
 var CommentList = React.createClass({
 
   	render: function() {
-    var data= this.props.data;
+    var data = this.props.data;
     var comments =[];
     for (var i=0; i<data.length; i++)
      {
-       comments.push(<Comment key = {data[i].id} author = {data[i].author}  text = {data[i].text} date={data[i].date} isUserThumbed={data[i].isUserThumbed} thumbs={data[i].thumbs} nestedComments= {data[i].nestedComments}/>);
+       comments.push(<Comment key = {data[i].id} nestLevel={this.props.nestLevel} author = {data[i].author}  text = {data[i].text} date={data[i].date} isUserThumbed={data[i].isUserThumbed} thumbs={data[i].thumbs} nestedComments= {data[i].nestedComments}/>);
      }
 
     	return (
@@ -69,6 +69,14 @@ var Comment = React.createClass({
 			}
 			this.setState({thumbs: thumbs});
 			this.setState({isUserThumbed: !this.state.isUserThumbed})
+
+	},
+
+	renderAvatarPath: function (){
+		if(this.props.nestLevel > 1) {
+			return "images/user32.png";
+		}
+		return "images/user64.png";
 
 	},
 
@@ -225,7 +233,7 @@ var Comment = React.createClass({
 
       <div className = "comment media">
       <a className="pull-left" href="#">
-          <img className = "media-object" src="http://placehold.it/64x64" alt=""/>
+          <img className = "media-object" src={this.renderAvatarPath()} alt=""/>
       </a>
 
 			<div className="media-heading">
@@ -248,7 +256,7 @@ var Comment = React.createClass({
         <div className="media m-t-2">
           {this.renderCommentForm()}
         </div>
-        <CommentList data = {this.props.nestedComments}/>
+        <CommentList data = {this.props.nestedComments} nestLevel={this.props.nestLevel + 1}/>
       </div>
       </div>
 

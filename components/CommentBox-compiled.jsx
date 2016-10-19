@@ -29,7 +29,7 @@ var CommentBox = React.createClass({
 						'div',
 						{ className: 'commentBox' },
 						React.createElement(CommentForm, { onCommentSubmit: this.handleCommentSubmit, author: this.props.author }),
-						React.createElement(CommentList, { data: this.state.data })
+						React.createElement(CommentList, { data: this.state.data, nestLevel: '1' })
 				);
 		}
 });
@@ -42,7 +42,7 @@ var CommentList = React.createClass({
 				var data = this.props.data;
 				var comments = [];
 				for (var i = 0; i < data.length; i++) {
-						comments.push(React.createElement(Comment, { key: data[i].id, author: data[i].author, text: data[i].text, date: data[i].date, isUserThumbed: data[i].isUserThumbed, thumbs: data[i].thumbs, nestedComments: data[i].nestedComments }));
+						comments.push(React.createElement(Comment, { key: data[i].id, nestLevel: this.props.nestLevel, author: data[i].author, text: data[i].text, date: data[i].date, isUserThumbed: data[i].isUserThumbed, thumbs: data[i].thumbs, nestedComments: data[i].nestedComments }));
 				}
 
 				return React.createElement(
@@ -70,6 +70,13 @@ var Comment = React.createClass({
 				}
 				this.setState({ thumbs: thumbs });
 				this.setState({ isUserThumbed: !this.state.isUserThumbed });
+		},
+
+		renderAvatarPath: function () {
+				if (this.props.nestLevel > 1) {
+						return "images/user32.png";
+				}
+				return "images/user64.png";
 		},
 
 		renderThumbUp: function () {
@@ -219,7 +226,7 @@ var Comment = React.createClass({
 						React.createElement(
 								'a',
 								{ className: 'pull-left', href: '#' },
-								React.createElement('img', { className: 'media-object', src: 'http://placehold.it/64x64', alt: '' })
+								React.createElement('img', { className: 'media-object', src: this.renderAvatarPath(), alt: '' })
 						),
 						React.createElement(
 								'div',
@@ -279,7 +286,7 @@ var Comment = React.createClass({
 										{ className: 'media m-t-2' },
 										this.renderCommentForm()
 								),
-								React.createElement(CommentList, { data: this.props.nestedComments })
+								React.createElement(CommentList, { data: this.props.nestedComments, nestLevel: this.props.nestLevel + 1 })
 						)
 				);
 		}
