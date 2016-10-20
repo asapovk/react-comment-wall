@@ -42,7 +42,80 @@ var data = {
           }
         }
     }
-}
+},
+
+    second:{
+
+      id: 2,
+      author: "Pete Hunt",
+      text: "This is one comment",
+      date: 0,
+      thumbs: 3,
+      isUserThumbed: false,
+      nestedComments: {}
+
+    },
+
+    third:{
+
+      id: 3,
+      author: "Pete Hunt",
+      text: "This is one comment",
+      date: 0,
+      thumbs: 3,
+      isUserThumbed: false,
+      nestedComments: {}
+
+    },
+
+    fourth:{
+
+      id: 4,
+      author: "Pete Hunt",
+      text: "This is one comment",
+      date: 0,
+      thumbs: 3,
+      isUserThumbed: false,
+      nestedComments: {}
+
+    },
+
+    fifth:{
+
+      id: 5,
+      author: "Pete Hunt",
+      text: "This is one comment",
+      date: 0,
+      thumbs: 3,
+      isUserThumbed: false,
+      nestedComments: {}
+
+    },
+
+    sixth:{
+
+      id: 6,
+      author: "Pete Hunt",
+      text: "This is one comment Pre last commnet",
+      date: 0,
+      thumbs: 3,
+      isUserThumbed: false,
+      nestedComments: {}
+
+    },
+
+    seventh:{
+
+      id: 7,
+      author: "Pete Hunt",
+      text: "This is one comment Last comment",
+      date: 0,
+      thumbs: 3,
+      isUserThumbed: false,
+      nestedComments: {}
+
+    },
+
 }
 
 

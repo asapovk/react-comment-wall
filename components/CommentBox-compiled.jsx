@@ -8,7 +8,7 @@ var CommentBox = React.createClass({
 		displayName: 'CommentBox',
 
 		getInitialState: function () {
-				return { data: this.props.data };
+				return { data: this.props.data, userPosted: 0 };
 		},
 
 		handleCommentSubmit: function (comment) {
@@ -18,7 +18,7 @@ var CommentBox = React.createClass({
 				var data = this.props.data;
 
 				data[hash] = comment;
-				this.setState({ data: data });
+				this.setState({ data: data, userPosted: this.state.userPosted + 1 });
 		},
 
 		render: function () {
@@ -28,7 +28,7 @@ var CommentBox = React.createClass({
 						'div',
 						{ className: 'commentBox' },
 						React.createElement(CommentForm, { onCommentSubmit: this.handleCommentSubmit, author: this.props.author }),
-						React.createElement(CommentList, { data: this.state.data, nestLevel: '1' })
+						React.createElement(CommentList, { data: this.state.data, nestLevel: '1', userPosted: this.state.userPosted })
 				);
 		}
 });
@@ -37,17 +37,51 @@ var CommentList = React.createClass({
 		displayName: 'CommentList',
 
 
+		getInitialState: function () {
+				return { commentsLimit: 5 };
+		},
+
+		renderShowMore: function (restOfComments) {
+				if (restOfComments > 0) {
+						return React.createElement(
+								'div',
+								{ className: 'well text-center' },
+								React.createElement(
+										'a',
+										{ href: '#', onClick: this.handleShowRestComments },
+										React.createElement(
+												'h4',
+												null,
+												'Show more comments'
+										)
+								)
+						);
+				}
+		},
+
+		handleShowRestComments: function (e) {
+				e.preventDefault();
+				this.setState({ commentsLimit: this.state.commentsLimit + 5 });
+		},
+
 		render: function () {
 				var data = this.props.data;
 				var comments = [];
+				var counter = 0;
+				var limit = this.state.commentsLimit;
 				for (var id in data) {
 						var dataArray = data[id];
 						comments.unshift(React.createElement(Comment, { key: dataArray.id, nestLevel: this.props.nestLevel, author: dataArray.author, text: dataArray.text, date: dataArray.date, isUserThumbed: dataArray.isUserThumbed, thumbs: dataArray.thumbs, nestedComments: dataArray.nestedComments }));
 				}
+				var commentsLength = comments.length;
+				CommentsToShow = comments.slice(0, limit + this.props.userPosted);
+				//CommentsToShow = comments.slice(0,10);
+
 				return React.createElement(
 						'div',
 						{ className: 'commentList' },
-						comments
+						CommentsToShow,
+						this.renderShowMore(commentsLength - limit)
 				);
 		}
 });
@@ -60,7 +94,7 @@ var Comment = React.createClass({
 		},
 
 		renderNestedComments: function (nestedData) {
-				return React.createElement(CommentList, { data: nestedData, nestLevel: this.props.nestLevel + 1 });
+				return React.createElement(CommentList, { data: nestedData, nestLevel: this.props.nestLevel + 1, userPosted: '0' });
 		},
 
 		componentDidMount: function () {
