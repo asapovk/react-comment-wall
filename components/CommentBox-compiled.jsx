@@ -1,5 +1,7 @@
 var React = require('react');
 
+var Hash = require('object-hash');
+
 var author = '';
 
 var CommentBox = React.createClass({
@@ -11,14 +13,11 @@ var CommentBox = React.createClass({
 
 		handleCommentSubmit: function (comment) {
 
-				var data = this.props.data;
-				var newId = data.length + 1;
+				var hash = Hash(comment);
 
-				comment.isUserThumbed = false;
-				comment.thumbs = 0;
-				comment.date = Date.now();
-				comment.id = newId;
-				data.unshift(comment);
+				var data = this.props.data;
+
+				data[hash] = comment;
 				this.setState({ data: data });
 		},
 
@@ -41,10 +40,10 @@ var CommentList = React.createClass({
 		render: function () {
 				var data = this.props.data;
 				var comments = [];
-				for (var i = 0; i < data.length; i++) {
-						comments.push(React.createElement(Comment, { key: data[i].id, nestLevel: this.props.nestLevel, author: data[i].author, text: data[i].text, date: data[i].date, isUserThumbed: data[i].isUserThumbed, thumbs: data[i].thumbs, nestedComments: data[i].nestedComments }));
+				for (var id in data) {
+						var dataArray = data[id];
+						comments.unshift(React.createElement(Comment, { key: dataArray.id, nestLevel: this.props.nestLevel, author: dataArray.author, text: dataArray.text, date: dataArray.date, isUserThumbed: dataArray.isUserThumbed, thumbs: dataArray.thumbs, nestedComments: dataArray.nestedComments }));
 				}
-
 				return React.createElement(
 						'div',
 						{ className: 'commentList' },
@@ -58,6 +57,14 @@ var Comment = React.createClass({
 
 		getInitialState: function () {
 				return { isUserThumbed: this.props.isUserThumbed, thumbs: this.props.thumbs, text: this.props.text, editedComment: false, deletedComment: false, showComment: false, nestedComments: this.props.nestedComments };
+		},
+
+		renderNestedComments: function (nestedData) {
+				return React.createElement(CommentList, { data: nestedData, nestLevel: this.props.nestLevel + 1 });
+		},
+
+		componentDidMount: function () {
+				this.setState({ nestedComments: this.props.nestedComments });
 		},
 
 		thumbUp: function (e) {
@@ -127,13 +134,9 @@ var Comment = React.createClass({
 
 				this.setState({ showComment: !this.state.showComment });
 				var nestedComments = this.props.nestedComments;
-				var newId = nestedComments.length + 1;
+				var hash = Hash(comment);
 
-				comment.isUserThumbed = false;
-				comment.thumbs = 0;
-				comment.date = Date.now();
-				comment.id = newId;
-				nestedComments.unshift(comment);
+				nestedComments[hash] = comment;
 				this.setState({ nestedComments: nestedComments });
 		},
 
@@ -286,7 +289,7 @@ var Comment = React.createClass({
 										{ className: 'media m-t-2' },
 										this.renderCommentForm()
 								),
-								React.createElement(CommentList, { data: this.props.nestedComments, nestLevel: this.props.nestLevel + 1 })
+								this.renderNestedComments(this.state.nestedComments)
 						)
 				);
 		}
@@ -300,7 +303,7 @@ var EditForm = React.createClass({
 		},
 		handleEditSubmit: function (e) {
 				e.preventDefault();
-				this.props.onCommentEdit(this.state.text);
+				this.props.onCommentEdit({ id: Hash(Date.now()), date: Date.now(), isUserThumbed: false, tumbs: 0, author: author, text: this.state.text, nestedComments: {} });
 		},
 
 		handleTextChange: function (e) {
@@ -353,7 +356,7 @@ var CommentForm = React.createClass({
 				}
 
 				this.setState({ text: '' });
-				this.props.onCommentSubmit({ author: this.props.author, text: this.state.text, nestedComments: [] });
+				this.props.onCommentSubmit({ id: Hash(Date.now()), date: Date.now(), thumbs: 0, isUserThumbed: false, author: this.props.author, text: this.state.text, nestedComments: {} });
 		},
 
 		render: function () {

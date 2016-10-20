@@ -10,13 +10,45 @@ var CommentBox = components.CommentBox;
 //var CommentBox = React.createFactory(components.CommentBox)
 var router = express.Router();
 
-var data = [
-  {id: 1, author: "Pete Hunt", text: "This is one comment", date: 0, thumbs: 3, isUserThumbed: false, nestedComments: [{id: 3, author: "Pete Hunt", text: "This is one comment", date: 3, thumbs: 2, isUserThumbed: false, nestedComments: []}]},
-  {id: 2, author: "Jordan Walke", text: "This is *another* comment", date: 1, thumbs: 2, isUserThumbed: true, nestedComments: [{id: 4, author: "Jordan Walke", text: "This is *another* comment", date: 4, thumbs: 2, isUserThumbed: false, nestedComments: []}]}
-];
+
+
+var data = {
+
+  first:{
+
+    id: 1,
+    author: "Pete Hunt",
+    text: "This is one comment",
+    date: 0,
+    thumbs: 3,
+    isUserThumbed: false,
+    nestedComments:
+    {  first: {
+        id: 101,
+        author: "Jordan Walke",
+        text: "This is *another* comment",
+        date: 1,
+        thumbs: 2,
+        isUserThumbed: true,
+        nestedComments: { first: {
+            id: 1010,
+            author: "Jordan Walke",
+            text: "This is *another* comment",
+            date: 4,
+            thumbs: 2,
+            isUserThumbed: false,
+            nestedComments: {}
+            }
+          }
+        }
+    }
+}
+}
+
 
 
 router.get('/', function(req, res){
+
   res.render('index', {
     //markup: ReactDOMServer.renderToString(CommentBox ({author: "asapovk", data: data})),
     markup: ReactDOMServer.renderToString(<CommentBox author = "asapovk" data= {data}/>),

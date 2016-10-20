@@ -14,6 +14,7 @@
     "express-handlebars": "^3.0.0",
     "handlebars": "^4.0.5",
     "jade": "^1.11.0",
+    "object-hash": "^1.1.4",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "remarkable": "^1.7.1"
