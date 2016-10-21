@@ -6,7 +6,7 @@ var author = '';
 
 var CommentBox = React.createClass({
 	getInitialState: function(){
-  return {data: this.props.data, userPosted: 0};
+  return {data: this.props.data, userPosted: 0, nestLevel: 1};
 	},
 
 	handleCommentSubmit: function (comment) {
@@ -27,7 +27,7 @@ var CommentBox = React.createClass({
     return (
       <div className="commentBox">
         <CommentForm onCommentSubmit={this.handleCommentSubmit} author={this.props.author}/>
-		    <CommentList  data = {this.state.data} nestLevel="1" userPosted={this.state.userPosted}/>
+		    <CommentList  data = {this.state.data} nestLevel={this.state.nestLevel} userPosted={this.state.userPosted}/>
       </div>
     );
   }
@@ -37,14 +37,29 @@ var CommentBox = React.createClass({
 var CommentList = React.createClass({
 
 		getInitialState: function () {
-			return {commentsLimit: 5};
+			if (this.props.nestLevel === 1){
+				return {commentsLimit: 5};
+			}
+			else if (this.props.nestLevel === 2 ){
+				return {commentsLimit: 2};
+			}
+
+			else {
+			return {commentsLimit: 0};
+			}
 		},
 
 		renderShowMore: function (restOfComments) {
 			if (restOfComments > 0) {
+				var word = "comments";
+				var wellClassName ="well text-center";
+				if (this.props.nestLevel > 1){
+					word = "replies";
+					wellClassName = "text-center";
+				}
 					return (
-						<div className="well text-center">
-							<a href="#" onClick={this.handleShowRestComments} ><h4>Show more comments</h4></a>
+						<div className={wellClassName}>
+							<a href="#" onClick={this.handleShowRestComments} ><h4>Show more {word}</h4></a>
 						</div>
 					);
 			}
@@ -66,7 +81,7 @@ var CommentList = React.createClass({
        		comments.unshift(<Comment key = {dataArray.id} nestLevel={this.props.nestLevel} author = {dataArray.author}  text = {dataArray.text} date={dataArray.date} isUserThumbed={dataArray.isUserThumbed} thumbs={dataArray.thumbs} nestedComments= {dataArray.nestedComments}/>);
 		 }
 		 	var commentsLength = comments.length;
-			CommentsToShow = comments.slice(0,limit + this.props.userPosted);
+			CommentsToShow = comments.slice(0,limit + parseInt(this.props.userPosted));
 			//CommentsToShow = comments.slice(0,10);
 
     	return (
@@ -81,11 +96,11 @@ var CommentList = React.createClass({
 
 var Comment = React.createClass({
   getInitialState: function(){
-    return {isUserThumbed: this.props.isUserThumbed, thumbs: this.props.thumbs, text: this.props.text, editedComment: false, deletedComment: false, showComment: false, nestedComments: this.props.nestedComments};
+    return {userPosted: 0, isUserThumbed: this.props.isUserThumbed, thumbs: this.props.thumbs, text: this.props.text, editedComment: false, deletedComment: false, showComment: false, nestedComments: this.props.nestedComments};
   },
 
 	renderNestedComments: function (nestedData){
-		return (<CommentList data = {nestedData} nestLevel={this.props.nestLevel + 1} userPosted="0"/>);
+		return (<CommentList data = {nestedData} nestLevel={this.props.nestLevel + 1 } userPosted={this.state.userPosted}/>);
 	},
 
 
@@ -193,7 +208,7 @@ var Comment = React.createClass({
 
 
 			nestedComments[hash] = comment;
-			this.setState({nestedComments: nestedComments});
+			this.setState({nestedComments: nestedComments, userPosted: this.state.userPosted + 1});
 	},
 
   handleCommentDelete: function (e) {

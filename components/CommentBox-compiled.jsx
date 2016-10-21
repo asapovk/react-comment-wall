@@ -8,7 +8,7 @@ var CommentBox = React.createClass({
 		displayName: 'CommentBox',
 
 		getInitialState: function () {
-				return { data: this.props.data, userPosted: 0 };
+				return { data: this.props.data, userPosted: 0, nestLevel: 1 };
 		},
 
 		handleCommentSubmit: function (comment) {
@@ -28,7 +28,7 @@ var CommentBox = React.createClass({
 						'div',
 						{ className: 'commentBox' },
 						React.createElement(CommentForm, { onCommentSubmit: this.handleCommentSubmit, author: this.props.author }),
-						React.createElement(CommentList, { data: this.state.data, nestLevel: '1', userPosted: this.state.userPosted })
+						React.createElement(CommentList, { data: this.state.data, nestLevel: this.state.nestLevel, userPosted: this.state.userPosted })
 				);
 		}
 });
@@ -38,21 +38,34 @@ var CommentList = React.createClass({
 
 
 		getInitialState: function () {
-				return { commentsLimit: 5 };
+				if (this.props.nestLevel === 1) {
+						return { commentsLimit: 5 };
+				} else if (this.props.nestLevel === 2) {
+						return { commentsLimit: 2 };
+				} else {
+						return { commentsLimit: 0 };
+				}
 		},
 
 		renderShowMore: function (restOfComments) {
 				if (restOfComments > 0) {
+						var word = "comments";
+						var wellClassName = "well text-center";
+						if (this.props.nestLevel > 1) {
+								word = "replies";
+								wellClassName = "text-center";
+						}
 						return React.createElement(
 								'div',
-								{ className: 'well text-center' },
+								{ className: wellClassName },
 								React.createElement(
 										'a',
 										{ href: '#', onClick: this.handleShowRestComments },
 										React.createElement(
 												'h4',
 												null,
-												'Show more comments'
+												'Show more ',
+												word
 										)
 								)
 						);
@@ -74,7 +87,7 @@ var CommentList = React.createClass({
 						comments.unshift(React.createElement(Comment, { key: dataArray.id, nestLevel: this.props.nestLevel, author: dataArray.author, text: dataArray.text, date: dataArray.date, isUserThumbed: dataArray.isUserThumbed, thumbs: dataArray.thumbs, nestedComments: dataArray.nestedComments }));
 				}
 				var commentsLength = comments.length;
-				CommentsToShow = comments.slice(0, limit + this.props.userPosted);
+				CommentsToShow = comments.slice(0, limit + parseInt(this.props.userPosted));
 				//CommentsToShow = comments.slice(0,10);
 
 				return React.createElement(
@@ -90,11 +103,11 @@ var Comment = React.createClass({
 		displayName: 'Comment',
 
 		getInitialState: function () {
-				return { isUserThumbed: this.props.isUserThumbed, thumbs: this.props.thumbs, text: this.props.text, editedComment: false, deletedComment: false, showComment: false, nestedComments: this.props.nestedComments };
+				return { userPosted: 0, isUserThumbed: this.props.isUserThumbed, thumbs: this.props.thumbs, text: this.props.text, editedComment: false, deletedComment: false, showComment: false, nestedComments: this.props.nestedComments };
 		},
 
 		renderNestedComments: function (nestedData) {
-				return React.createElement(CommentList, { data: nestedData, nestLevel: this.props.nestLevel + 1, userPosted: '0' });
+				return React.createElement(CommentList, { data: nestedData, nestLevel: this.props.nestLevel + 1, userPosted: this.state.userPosted });
 		},
 
 		componentDidMount: function () {
@@ -171,7 +184,7 @@ var Comment = React.createClass({
 				var hash = Hash(comment);
 
 				nestedComments[hash] = comment;
-				this.setState({ nestedComments: nestedComments });
+				this.setState({ nestedComments: nestedComments, userPosted: this.state.userPosted + 1 });
 		},
 
 		handleCommentDelete: function (e) {

@@ -40,7 +40,46 @@ var data = {
             nestedComments: {}
             }
           }
-        }
+        },
+        second: {
+           id: 102,
+           author: "Jordan Walke",
+           text: "This is *another* comment",
+           date: 1,
+           thumbs: 2,
+           isUserThumbed: true,
+           nestedComments: { first: {
+               id: 1010,
+               author: "Jordan Walke",
+               text: "This is *another* comment",
+               date: 4,
+               thumbs: 2,
+               isUserThumbed: false,
+               nestedComments: {}
+               }
+             }
+           },
+           third: {
+              id: 103,
+              author: "Jordan Walke",
+              text: "This is *another* comment",
+              date: 1,
+              thumbs: 2,
+              isUserThumbed: true,
+              nestedComments: { first: {
+                  id: 1010,
+                  author: "Jordan Walke",
+                  text: "This is *another* comment",
+                  date: 4,
+                  thumbs: 2,
+                  isUserThumbed: false,
+                  nestedComments: {}
+                  }
+                }
+              }
+
+
+
     }
 },
 
@@ -112,7 +151,63 @@ var data = {
       date: 0,
       thumbs: 3,
       isUserThumbed: false,
-      nestedComments: {}
+      nestedComments: {
+        first: {
+            id: 101,
+            author: "Jordan Walke",
+            text: "This is *another* comment",
+            date: 1,
+            thumbs: 2,
+            isUserThumbed: true,
+            nestedComments: { first: {
+                id: 1010,
+                author: "Jordan Walke",
+                text: "This is *another* comment",
+                date: 4,
+                thumbs: 2,
+                isUserThumbed: false,
+                nestedComments: {}
+                }
+              }
+            },
+            second: {
+               id: 102,
+               author: "Jordan Walke",
+               text: "This is *another* comment",
+               date: 1,
+               thumbs: 2,
+               isUserThumbed: true,
+               nestedComments: { first: {
+                   id: 1010,
+                   author: "Jordan Walke",
+                   text: "This is *another* comment",
+                   date: 4,
+                   thumbs: 2,
+                   isUserThumbed: false,
+                   nestedComments: {}
+                   }
+                 }
+               },
+               third: {
+                  id: 103,
+                  author: "Jordan Walke",
+                  text: "This is *another* comment",
+                  date: 1,
+                  thumbs: 2,
+                  isUserThumbed: true,
+                  nestedComments: { first: {
+                      id: 1010,
+                      author: "Jordan Walke",
+                      text: "This is *another* comment",
+                      date: 4,
+                      thumbs: 2,
+                      isUserThumbed: false,
+                      nestedComments: {}
+                      }
+                    }
+                  }
+
+      }
 
     },
 
