@@ -350,7 +350,8 @@ var EditForm = React.createClass({
 		},
 		handleEditSubmit: function (e) {
 				e.preventDefault();
-				this.props.onCommentEdit({ id: Hash(Date.now()), date: Date.now(), isUserThumbed: false, tumbs: 0, author: author, text: this.state.text, nestedComments: {} });
+				//  this.props.onCommentEdit({id: Hash(Date.now()), date: Date.now(), isUserThumbed: false, tumbs:0, author: author, text: this.state.text, nestedComments: {}});
+				this.props.onCommentEdit(this.state.text);
 		},
 
 		handleTextChange: function (e) {
