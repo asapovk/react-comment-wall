@@ -8,7 +8,12 @@ var CommentBox = React.createClass({
 		displayName: 'CommentBox',
 
 		getInitialState: function () {
-				return { data: this.props.data, userPosted: 0, nestLevel: 1 };
+				return { data: this.props.data, userPosted: 0, nestLevel: 1, closeSubmitForms: false };
+		},
+		handleCloseOtherSubmitForms: function () {
+				this.setState({ closeSubmitForms: false });
+
+				console.log('works');
 		},
 
 		handleCommentSubmit: function (comment) {
@@ -28,7 +33,7 @@ var CommentBox = React.createClass({
 						'div',
 						{ className: 'commentBox' },
 						React.createElement(CommentForm, { onCommentSubmit: this.handleCommentSubmit, author: this.props.author }),
-						React.createElement(CommentList, { data: this.state.data, nestLevel: this.state.nestLevel, userPosted: this.state.userPosted })
+						React.createElement(CommentList, { onCloseOtherSumbitForms: this.handleCloseOtherSubmitForms, data: this.state.data, nestLevel: this.state.nestLevel, userPosted: this.state.userPosted, closeSubmitForms: this.state.closeSubmitForms })
 				);
 		}
 });
@@ -46,6 +51,12 @@ var CommentList = React.createClass({
 						return { commentsLimit: 0 };
 				}
 		},
+
+		//handleCloseOtherSubmitForms: function (){
+		//	this.setState({closeSubmitForms: false});
+
+		//	console.log('works');
+		//},
 
 		renderShowMore: function (restOfComments) {
 				if (restOfComments > 0) {
@@ -84,7 +95,7 @@ var CommentList = React.createClass({
 				var limit = this.state.commentsLimit;
 				for (var id in data) {
 						var dataArray = data[id];
-						comments.unshift(React.createElement(Comment, { key: dataArray.id, nestLevel: this.props.nestLevel, author: dataArray.author, text: dataArray.text, date: dataArray.date, isUserThumbed: dataArray.isUserThumbed, thumbs: dataArray.thumbs, nestedComments: dataArray.nestedComments }));
+						comments.unshift(React.createElement(Comment, { key: dataArray.id, onCloseOtherSumbitForms: this.props.onCloseOtherSumbitForms, showComment: this.props.closeSubmitForms, nestLevel: this.props.nestLevel, author: dataArray.author, text: dataArray.text, date: dataArray.date, isUserThumbed: dataArray.isUserThumbed, thumbs: dataArray.thumbs, nestedComments: dataArray.nestedComments }));
 				}
 				var commentsLength = comments.length;
 				CommentsToShow = comments.slice(0, limit + parseInt(this.props.userPosted));
@@ -103,11 +114,28 @@ var Comment = React.createClass({
 		displayName: 'Comment',
 
 		getInitialState: function () {
-				return { userPosted: 0, isUserThumbed: this.props.isUserThumbed, thumbs: this.props.thumbs, text: this.props.text, editedComment: false, deletedComment: false, showComment: false, nestedComments: this.props.nestedComments };
+				return { closeSubmitForms: false, userPosted: 0, isUserThumbed: this.props.isUserThumbed, thumbs: this.props.thumbs, text: this.props.text, editedComment: false, deletedComment: false, showComment: false, nestedComments: this.props.nestedComments };
+		},
+
+		shouldComponentUpdate: function () {
+				console.log('This props is ' + this.props.showComment + 'this state is ' + this.state.showComment);
+				return true;
+		},
+
+		componentWillReceiveProps: function (nextProps) {
+				if (this.state.showComment) {
+						this.setState({ showComment: nextProps.showComment });
+				}
+		},
+
+		handleCloseOtherSubmitForms: function () {
+				this.setState({ closeSubmitForms: false });
+
+				//	console.log('works');
 		},
 
 		renderNestedComments: function (nestedData) {
-				return React.createElement(CommentList, { data: nestedData, nestLevel: this.props.nestLevel + 1, userPosted: this.state.userPosted });
+				return React.createElement(CommentList, { data: nestedData, nestLevel: this.props.nestLevel + 1, userPosted: this.state.userPosted, onCloseOtherSumbitForms: this.handleCloseOtherSubmitForms, closeSubmitForms: this.state.closeSubmitForms });
 		},
 
 		componentDidMount: function () {
@@ -206,10 +234,12 @@ var Comment = React.createClass({
 				e.preventDefault();
 				this.setState({ showComment: !this.state.showComment });
 				this.renderCommentForm();
+				this.props.onCloseOtherSumbitForms();
 		},
 
 		renderCommentForm: function () {
 				if (this.state.showComment) {
+						console.log('Should form appear ' + this.state.showComment);
 						return React.createElement(CommentForm, { onCommentSubmit: this.handleNestedCommentSubmit, author: author });
 				}
 		},
