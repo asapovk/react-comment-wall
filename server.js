@@ -1,4 +1,6 @@
-require('babel-register');
+require('babel-register')({
+  presets: ['es2015']
+});
 var babel=require('babel-core');
 var expressHbs = require('express-handlebars');
 var path = require('path');

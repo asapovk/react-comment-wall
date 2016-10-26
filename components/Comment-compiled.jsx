@@ -1,232 +1,35 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+		value: true
+});
+
+var _CommentListCompiled = require('./CommentList-compiled.jsx');
+
+var _CommentListCompiled2 = _interopRequireDefault(_CommentListCompiled);
+
 var _reactRedux = require('react-redux');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 require('babel-register')({
 		presets: ['es2015']
 });
 
+var author = "asapovk";
 var React = require('react');
-
-var Hash = require('object-hash');
-
-//import Comment  from './Comment.jsx';
-//import CommentList from './CommentList.jsx';
-
-
-var author = '';
-
-var CommentBox = React.createClass({
-		displayName: 'CommentBox',
-
-		getInitialState: function getInitialState() {
-				return { data: this.props.data, userPosted: 0, nestLevel: 1, closeSubmitForms: false };
-		},
-
-		handleCommentSubmit: function handleCommentSubmit(comment) {
-
-				var hash = Hash(comment);
-
-				var data = this.props.data;
-
-				data[hash] = comment;
-				this.setState({ data: data, userPosted: this.state.userPosted + 1 });
-		},
-
-		render: function render() {
-
-				author = this.props.author;
-				return React.createElement(
-						'div',
-						{ className: 'commentBox' },
-						React.createElement(CommentForm, { onCommentSubmit: this.handleCommentSubmit, author: this.props.author }),
-						React.createElement(CommentList, { data: this.state.data, nestLevel: this.state.nestLevel, userPosted: this.state.userPosted, closeSubmitForms: this.state.closeSubmitForms })
-				);
-		}
-});
-
-var EditForm = React.createClass({
-		displayName: 'EditForm',
-
-		getInitialState: function getInitialState() {
-				return { text: this.props.placeholder };
-		},
-		handleEditSubmit: function handleEditSubmit(e) {
-				e.preventDefault();
-				//  this.props.onCommentEdit({id: Hash(Date.now()), date: Date.now(), isUserThumbed: false, tumbs:0, author: author, text: this.state.text, nestedComments: {}});
-				this.props.onCommentEdit(this.state.text);
-		},
-
-		handleTextChange: function handleTextChange(e) {
-				this.setState({ text: e.target.value });
-		},
-
-		render: function render() {
-				return React.createElement(
-						'form',
-						{ className: 'commentForm', onSubmit: this.handleEditSubmit },
-						React.createElement(
-								'div',
-								{ className: 'form-group' },
-								React.createElement('textarea', { rows: '3', className: 'form-control',
-										value: this.state.text,
-										onChange: this.handleTextChange })
-						),
-						React.createElement(
-								'button',
-								{ type: 'submit', className: 'btn btn-primary' },
-								'Submit'
-						)
-				);
-		}
-
-});
-
-var CommentForm = React.createClass({
-		displayName: 'CommentForm',
-
-
-		getInitialState: function getInitialState() {
-				return { author: '', text: '' };
-		},
-
-		handleTextChange: function handleTextChange(e) {
-				this.setState({ text: e.target.value });
-		},
-
-		handleSubmit: function handleSubmit(e) {
-
-				e.preventDefault();
-
-				var author = this.props.author.trim();
-				var text = this.state.text.trim();
-				var nestedComments = [];
-
-				if (!text) {
-						return;
-				}
-
-				this.setState({ text: '' });
-				this.props.onCommentSubmit({ id: Hash(Date.now()), date: Date.now(), thumbs: 0, isUserThumbed: false, author: this.props.author, text: this.state.text, nestedComments: {} });
-		},
-
-		render: function render() {
-				return React.createElement(
-						'div',
-						{ className: 'well' },
-						React.createElement(
-								'h4',
-								null,
-								'Leave a Comment:'
-						),
-						React.createElement(
-								'form',
-								{ className: 'commentForm', onSubmit: this.handleSubmit },
-								React.createElement(
-										'div',
-										{ className: 'form-group' },
-										React.createElement('textarea', { rows: '3', className: 'form-control',
-												placeholder: 'Enter your comment here',
-												value: this.state.text,
-												onChange: this.handleTextChange })
-								),
-								React.createElement(
-										'button',
-										{ type: 'submit', className: 'btn btn-primary' },
-										'Submit'
-								)
-						)
-				);
-		}
-});
-
-///////////////////////////////////////////////COMMENT LIST!!!
-var CommentList = React.createClass({
-		displayName: 'CommentList',
-
-
-		getInitialState: function getInitialState() {
-				if (this.props.nestLevel === 1) {
-						return { commentsLimit: 5 };
-				} else if (this.props.nestLevel === 2) {
-						return { commentsLimit: 2 };
-				} else {
-						return { commentsLimit: 0 };
-				}
-		},
-
-		//handleCloseOtherSubmitForms: function (){
-		//	this.setState({closeSubmitForms: false});
-
-		//	console.log('works');
-		//},
-
-		renderShowMore: function renderShowMore(restOfComments) {
-				if (restOfComments > 0) {
-						var word = "comments";
-						var wellClassName = "well text-center";
-						if (this.props.nestLevel > 1) {
-								word = "replies";
-								wellClassName = "text-center";
-						}
-						return React.createElement(
-								'div',
-								{ className: wellClassName },
-								React.createElement(
-										'a',
-										{ href: '#', onClick: this.handleShowRestComments },
-										React.createElement(
-												'h4',
-												null,
-												'Show more ',
-												word
-										)
-								)
-						);
-				}
-		},
-
-		handleShowRestComments: function handleShowRestComments(e) {
-				e.preventDefault();
-				this.setState({ commentsLimit: this.state.commentsLimit + 5 });
-		},
-
-		render: function render() {
-				var data = this.props.data;
-				var comments = [];
-				var counter = 0;
-				var limit = this.state.commentsLimit;
-				for (var id in data) {
-						var dataArray = data[id];
-						comments.unshift(React.createElement(ReduxComment, { key: dataArray.id, onCloseOtherSumbitForms: true, showComment: this.props.closeSubmitForms, nestLevel: this.props.nestLevel, author: dataArray.author, text: dataArray.text, date: dataArray.date, isUserThumbed: dataArray.isUserThumbed, thumbs: dataArray.thumbs, nestedComments: dataArray.nestedComments }));
-				}
-				var commentsLength = comments.length;
-				var CommentsToShow = comments.slice(0, limit + parseInt(this.props.userPosted));
-				//CommentsToShow = comments.slice(0,10);
-
-				return React.createElement(
-						'div',
-						{ className: 'commentList' },
-						CommentsToShow,
-						this.renderShowMore(commentsLength - limit)
-				);
-		}
-});
-
-///////////////////////////////////////////////////COMMENT!!!!
 
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-		return { onCloseOtherSumbitForms: function onCloseOtherSumbitForms() {
-						dispatch({ type: 'CLOSE_OTHERS' });
-						console.log('dispatch works');
-				}
-		};
+		// return {onCloseOtherSumbitForms: () => {
+		//   dispatch({type: 'CLOSE_OTHERS'})
+		//   console.log('dispatch works');
+		// }
+		//}
 };
 
 var mapStateToProps = function mapStateToProps(state) {
-		console.log(state);
-		return { showComment: state };
+		//  return {showComment: state}
 };
 
 var Comment = React.createClass({
@@ -244,13 +47,12 @@ var Comment = React.createClass({
 
 		componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
 				if (this.state.showComment) {
-						//this.setState({showComment: nextProps.showComment});
-						this.setState({ showComment: false });
+						this.setState({ showComment: nextProps.showComment });
 				}
 		},
 
 		renderNestedComments: function renderNestedComments(nestedData) {
-				return React.createElement(CommentList, { data: nestedData, nestLevel: this.props.nestLevel + 1, userPosted: this.state.userPosted, closeSubmitForms: this.state.closeSubmitForms });
+				return React.createElement(_CommentListCompiled2.default, { data: nestedData, nestLevel: this.props.nestLevel + 1, userPosted: this.state.userPosted, closeSubmitForms: this.state.closeSubmitForms });
 		},
 
 		componentDidMount: function componentDidMount() {
@@ -412,7 +214,7 @@ var Comment = React.createClass({
 								null,
 								React.createElement(EditForm, { placeholder: this.state.text, onCommentEdit: this.handleCommentEditSubmit }),
 								React.createElement('hr', null),
-								React.createElement(CommentList, { data: this.props.nestedComments })
+								React.createElement(_CommentListCompiled2.default, { data: this.props.nestedComments })
 						);
 				}
 
@@ -488,6 +290,6 @@ var Comment = React.createClass({
 		}
 });
 
-var ReduxComment = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Comment);
+var reduxComment = (0, _reactRedux.connect)(mapDispatchToProps, mapStateToProps)(Comment);
 
-exports.CommentBox = CommentBox;
+exports.default = reduxComment;

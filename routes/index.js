@@ -1,3 +1,7 @@
+require('babel-register')({
+  presets: ['es2015']
+});
+
 
 var expressHbs = require('express-handlebars');
 var path = require('path');
@@ -214,12 +218,39 @@ var data = {
 }
 
 
+//import {render} from 'react-dom';
+import {Provider} from 'react-redux';
+import {createStore} from 'redux';
+import CommentBoxReducer from '../reducers/CommentBoxReducer'
+
+
+
+let store = createStore(CommentBoxReducer);
+
+var PreProvider = React.createClass({
+  render: function (){
+    return (
+      <Provider store ={store}>
+    		<CommentBox author="asapovk" data = {data}/>
+    	</Provider>
+    );
+  }
+
+});
+
+
+
+
+
+
+
+
 
 router.get('/', function(req, res){
 
   res.render('index', {
     //markup: ReactDOMServer.renderToString(CommentBox ({author: "asapovk", data: data})),
-    markup: ReactDOMServer.renderToString(<CommentBox author = "asapovk" data= {data}/>),
+    markup: ReactDOMServer.renderToString(<PreProvider/>),
     state: JSON.stringify(data)
   });
 });

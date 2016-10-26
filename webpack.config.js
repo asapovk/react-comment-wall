@@ -11,12 +11,20 @@ module.exports = {
     path: BUILD_DIR
   },
 
+  debug: true,
+  devtool: 'source-map',
+  resolve: {
+    extensions: ['', '.js', '.jsx']
+  },
   module: {
     loaders: [
       {
         test: /\.jsx?$/,
         include : APP_DIR,
         loader: 'babel-loader',
+        query: {
+        presets: ['es2015', 'react']
+        }
       }
     ]
   }
