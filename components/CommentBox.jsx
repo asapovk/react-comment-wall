@@ -179,19 +179,32 @@ var CommentList = React.createClass({
     var comments = [];
 		var counter = 0;
 		var limit = this.state.commentsLimit;
-    for (var id in data)
-     {
-			    var dataArray = data[id];
-       		comments.unshift(<ReduxComment key = {dataArray.id} onCloseOtherSumbitForms showComment={this.props.closeSubmitForms} nestLevel={this.props.nestLevel} author = {dataArray.author}  text = {dataArray.text} date={dataArray.date} isUserThumbed={dataArray.isUserThumbed} thumbs={dataArray.thumbs} nestedComments= {dataArray.nestedComments}/>);
-		 }
+    if(this.props.nestLevel > 1){
+      for (var id in data)
+       {
+  			    var dataArray = data[id];
+         		comments.push(<ReduxComment key = {dataArray.id} onCloseOtherSumbitForms showComment={this.props.closeSubmitForms} nestLevel={this.props.nestLevel} author = {dataArray.author}  text = {dataArray.text} date={dataArray.date} isUserThumbed={dataArray.isUserThumbed} thumbs={dataArray.thumbs} nestedComments= {dataArray.nestedComments}/>);
+  		 }
+      var commentsLength = comments.length;
+ 			var CommentsToShow = comments.slice(commentsLength-limit - parseInt(this.props.userPosted));
+
+    }
+    else {
+      for (var id in data)
+       {
+  			    var dataArray = data[id];
+         		comments.unshift(<ReduxComment key = {dataArray.id} onCloseOtherSumbitForms showComment={this.props.closeSubmitForms} nestLevel={this.props.nestLevel} author = {dataArray.author}  text = {dataArray.text} date={dataArray.date} isUserThumbed={dataArray.isUserThumbed} thumbs={dataArray.thumbs} nestedComments= {dataArray.nestedComments}/>);
+  		 }
+
 		 	var commentsLength = comments.length;
 			var CommentsToShow = comments.slice(0,limit + parseInt(this.props.userPosted));
 			//CommentsToShow = comments.slice(0,10);
-
+    }
     	return (
 	      <div className="commentList">
+            {((self)=>{if(self.props.nestLevel > 1){self.renderShowMore(commentsLength - limit)}})(this)}
 	        	{CommentsToShow}
-						{this.renderShowMore(commentsLength - limit)}
+            {((self)=>{if(self.props.nestLevel === 1){self.renderShowMore(commentsLength - limit)}})(this)}
 	      </div>
     	);
   }

@@ -248,6 +248,7 @@ var PreProvider = React.createClass({
 
 router.get('/', function(req, res){
 
+
   res.render('index', {
     //markup: ReactDOMServer.renderToString(CommentBox ({author: "asapovk", data: data})),
     markup: ReactDOMServer.renderToString(<PreProvider/>),
