@@ -32,14 +32,14 @@ module.exports = function (grunt) {
         }
     }
   });
-  grunt.registerTask('default', '', function() {
+/*  grunt.registerTask('default', '', function() {
       var taskList = [
           'express:dev',
           'watch'
       ];
       grunt.task.run(taskList);
   });
-
-//  grunt.registerTask('default', ['exec']);
+*/
+  grunt.registerTask('default', ['exec']);
 
 }

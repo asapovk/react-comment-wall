@@ -167,7 +167,7 @@ var CommentList = React.createClass({
 						var wellClassName = "well text-center";
 						if (this.props.nestLevel > 1) {
 								word = "replies";
-								wellClassName = "text-center";
+								wellClassName = '';
 						}
 						return React.createElement(
 								'div',
@@ -213,21 +213,21 @@ var CommentList = React.createClass({
 						var CommentsToShow = comments.slice(0, limit + parseInt(this.props.userPosted));
 						//CommentsToShow = comments.slice(0,10);
 				}
-				return React.createElement(
-						'div',
-						{ className: 'commentList' },
-						function (self) {
-								if (self.props.nestLevel > 1) {
-										self.renderShowMore(commentsLength - limit);
-								}
-						}(this),
-						CommentsToShow,
-						function (self) {
-								if (self.props.nestLevel === 1) {
-										self.renderShowMore(commentsLength - limit);
-								}
-						}(this)
-				);
+				if (this.props.nestLevel > 1) {
+						return React.createElement(
+								'div',
+								{ className: 'commentList' },
+								this.renderShowMore(commentsLength - limit),
+								CommentsToShow
+						);
+				} else {
+						return React.createElement(
+								'div',
+								{ className: 'commentList' },
+								CommentsToShow,
+								this.renderShowMore(commentsLength - limit)
+						);
+				}
 		}
 });
 
