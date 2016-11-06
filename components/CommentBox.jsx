@@ -43,7 +43,7 @@ var CommentBox = React.createClass({
     author = this.props.author;
     return (
       <div className="commentBox">
-        <CommentForm onCommentSubmit={this.handleCommentSubmit} author={this.props.author}/>
+        <CommentForm onCommentSubmit={this.handleCommentSubmit} author={this.props.author} nestLevel={this.state.nestLevel}/>
 		    <CommentList   data = {this.state.data} nestLevel={this.state.nestLevel} userPosted={this.state.userPosted} closeSubmitForms = {this.state.closeSubmitForms}/>
       </div>
     );
@@ -111,19 +111,32 @@ var CommentForm = React.createClass({
 		this.props.onCommentSubmit({id: Hash(Date.now()), date: Date.now() ,thumbs: 0, isUserThumbed: false, author: this.props.author, text: this.state.text, nestedComments: {}});
 	},
 
+  renderAvatarPath: function () {
+    if(this.props.nestLevel > 1) {
+      return "images/user32.png";
+    }
+    return "images/user64.png";
+  },
+
   	render: function() {
     	return (
-        <div className="well">
-        <h4>Leave a Comment:</h4>
-      	<form className="commentForm"  onSubmit = {this.handleSubmit}>
-				<div className="form-group">
+        <div className="well comment-form">
+        <div className="row">
+        <div className="col-md-1">
+            <img className = "media-object comment-form__avatar" src={this.renderAvatarPath()} alt=""/>
+        </div>
+        <div className="col-md-11">
+      	   <form className="commentForm comment-form__form"  onSubmit = {this.handleSubmit}>
+				  <div className="form-group">
         	<textarea rows="3" className="form-control"
         	placeholder="Enter your comment here"
         	value={this.state.text}
         	onChange={this.handleTextChange}/>
 					</div>
-          <button type="submit" className="btn btn-primary">Submit</button>
+          <button type="submit" className="btn btn-primary pull-right">Submit</button>
       	</form>
+        </div>
+        </div>
         </div>
     	);
   	}
@@ -405,7 +418,7 @@ var Comment = React.createClass({
   renderCommentForm: function () {
     if(this.state.showComment){
 
-      return (<CommentForm onCommentSubmit={this.handleNestedCommentSubmit} author={author}/>)
+      return (<CommentForm onCommentSubmit={this.handleNestedCommentSubmit} author={author} nestLevel={this.props.nestLevel}/>)
     }
   },
 

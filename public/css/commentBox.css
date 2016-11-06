@@ -1,3 +1,11 @@
 h4 {
   margin: 0 !important;
 }
+
+.comment-form__avatar{
+  margin-right: 10px !important;
+}
+
+.comment-form {
+  padding-bottom: 5px !important;
+}

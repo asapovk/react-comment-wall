@@ -39,7 +39,7 @@ var CommentBox = React.createClass({
 				return React.createElement(
 						'div',
 						{ className: 'commentBox' },
-						React.createElement(CommentForm, { onCommentSubmit: this.handleCommentSubmit, author: this.props.author }),
+						React.createElement(CommentForm, { onCommentSubmit: this.handleCommentSubmit, author: this.props.author, nestLevel: this.state.nestLevel }),
 						React.createElement(CommentList, { data: this.state.data, nestLevel: this.state.nestLevel, userPosted: this.state.userPosted, closeSubmitForms: this.state.closeSubmitForms })
 				);
 		}
@@ -110,30 +110,45 @@ var CommentForm = React.createClass({
 				this.props.onCommentSubmit({ id: Hash(Date.now()), date: Date.now(), thumbs: 0, isUserThumbed: false, author: this.props.author, text: this.state.text, nestedComments: {} });
 		},
 
+		renderAvatarPath: function renderAvatarPath() {
+				if (this.props.nestLevel > 1) {
+						return "images/user32.png";
+				}
+				return "images/user64.png";
+		},
+
 		render: function render() {
 				return React.createElement(
 						'div',
-						{ className: 'well' },
+						{ className: 'well comment-form' },
 						React.createElement(
-								'h4',
-								null,
-								'Leave a Comment:'
-						),
-						React.createElement(
-								'form',
-								{ className: 'commentForm', onSubmit: this.handleSubmit },
+								'div',
+								{ className: 'row' },
 								React.createElement(
 										'div',
-										{ className: 'form-group' },
-										React.createElement('textarea', { rows: '3', className: 'form-control',
-												placeholder: 'Enter your comment here',
-												value: this.state.text,
-												onChange: this.handleTextChange })
+										{ className: 'col-md-1' },
+										React.createElement('img', { className: 'media-object comment-form__avatar', src: this.renderAvatarPath(), alt: '' })
 								),
 								React.createElement(
-										'button',
-										{ type: 'submit', className: 'btn btn-primary' },
-										'Submit'
+										'div',
+										{ className: 'col-md-11' },
+										React.createElement(
+												'form',
+												{ className: 'commentForm comment-form__form', onSubmit: this.handleSubmit },
+												React.createElement(
+														'div',
+														{ className: 'form-group' },
+														React.createElement('textarea', { rows: '3', className: 'form-control',
+																placeholder: 'Enter your comment here',
+																value: this.state.text,
+																onChange: this.handleTextChange })
+												),
+												React.createElement(
+														'button',
+														{ type: 'submit', className: 'btn btn-primary pull-right' },
+														'Submit'
+												)
+										)
 								)
 						)
 				);
@@ -374,7 +389,7 @@ var Comment = React.createClass({
 		renderCommentForm: function renderCommentForm() {
 				if (this.state.showComment) {
 
-						return React.createElement(CommentForm, { onCommentSubmit: this.handleNestedCommentSubmit, author: author });
+						return React.createElement(CommentForm, { onCommentSubmit: this.handleNestedCommentSubmit, author: author, nestLevel: this.props.nestLevel });
 				}
 		},
 
