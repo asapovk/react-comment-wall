@@ -2,7 +2,7 @@ require('babel-register')({
   presets: ['es2015']
 });
 
-var author ="asapovk";
+var author = "asapovk";
 var React = require('react')
 import CommentList from './CommentList.jsx';
 import {connect} from 'react-redux';
